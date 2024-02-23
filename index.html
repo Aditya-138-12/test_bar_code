@@ -4,46 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barcode Scanner</title>
-<style>
-    #output {
-        margin-top: 20px;
-        font-size: 18px;
-    }
-</style>
 </head>
 <body>
 <h1>Barcode Scanner</h1>
+<video id="video" width="640" height="480" autoplay></video>
 <div id="output"></div>
 
 <script>
-    // Function to handle barcode scanner result
-    function onBarcodeScanned(event) {
-        // Get the result from the barcode scanner
-        const code = event.data.code;
+// Function to start the barcode scanner
+function startScanner() {
+    // Get video element
+    var video = document.getElementById('video');
+
+    // Access the device camera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function(stream) {
+            video.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error('Error accessing camera:', error);
+        });
+
+    // Create a canvas element to capture frames
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
+    // Function to capture frames and decode barcodes
+    function captureFrame() {
+        // Draw video frame onto the canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Get image data from the canvas
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Decode barcode from the image data (you can use any barcode decoding library here)
+        // For example, using ZXing JavaScript library:
+        // var code = decodeBarcode(imageData);
         
-        // Display the result on the webpage
-        document.getElementById('output').textContent = 'Scanned Barcode: ' + code;
+        // For demonstration purposes, just display the raw image data
+        document.getElementById('output').textContent = imageData;
+        
+        // Request next frame
+        requestAnimationFrame(captureFrame);
     }
 
-    // Event listener for barcode scanner result
-    document.addEventListener('barcode-scanned', onBarcodeScanned);
+    // Start capturing frames
+    captureFrame();
+}
 
-    // HTML5 Barcode Scanner API configuration
-    const scanner = new BarcodeScanner({
-        barcodeTypes: ['code-39'],
-        targetFormats: ['data']
-    });
-
-    // Start the barcode scanner
-    scanner.start();
-
-    // Stop the barcode scanner when the page unloads
-    window.addEventListener('unload', function() {
-        scanner.stop();
-    });
+// Start the barcode scanner when the page loads
+document.addEventListener('DOMContentLoaded', startScanner);
 </script>
-
-<!-- Barcode Scanner Library -->
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.23.5"></script>
 </body>
 </html>
