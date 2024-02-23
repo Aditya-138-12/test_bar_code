@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barcode Scanner</title>
-<style>
-    #video {
-        width: 100%;
-        max-width: 640px;
-        height: auto;
-    }
-</style>
 </head>
 <body>
 <h1>Barcode Scanner</h1>
@@ -42,28 +35,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Convert canvas content to base64 image data
         const imageData = canvas.toDataURL('image/png');
+        
+        // Decode barcode using ZXing API
         decodeBarcode(imageData);
     }
 
-    // Function to decode barcode using jsQR library
+    // Function to decode barcode using ZXing API
     function decodeBarcode(imageData) {
-        const img = new Image();
-        img.onload = function() {
-            const code = jsQR(img, img.width, img.height);
-            if (code) {
-                output.textContent = 'Scanned Barcode: ' + code.data;
+        // Send image data to ZXing API for decoding
+        fetch('https://zxing.org/w/decode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'u=' + encodeURIComponent(imageData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display decoded barcode data
+            if (data && data[0] && data[0].symbol) {
+                output.textContent = 'Scanned Barcode: ' + data[0].symbol.data;
             } else {
                 output.textContent = 'No barcode detected';
             }
-        };
-        img.src = imageData;
+        })
+        .catch(error => {
+            console.error('Error decoding barcode:', error);
+            output.textContent = 'Error decoding barcode';
+        });
     }
 
     // Capture image from video stream every second
     setInterval(captureImage, 1000);
 });
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 </body>
 </html>
