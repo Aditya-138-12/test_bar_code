@@ -7,112 +7,44 @@
 </head>
 <body>
 <h1>Barcode Scanner</h1>
-<video id="video" autoplay></video>
-<canvas id="canvas" style="display: none;"></canvas>
+<div id="barcode-scanner"></div>
 <div id="output"></div>
 
-    
+<script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const video = document.getElementById('video');
-    const output = document.getElementById('output');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-
-    // Access the device camera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function(stream) {
-            video.srcObject = stream;
-        })
-        .catch(function(error) {
-            console.error('Error accessing camera:', error);
-        });
-
-    // Function to capture image from video stream
-    function captureImage() {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Convert canvas content to base64 image data
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-        // Process the image data to extract the barcode
-        const barcodeData = decodeBarcode(imageData);
-        
-        // Display the extracted barcode data
-        output.textContent = barcodeData || 'No barcode detected';
-    }
-
-    // Function to decode barcode from image data
-    function decodeBarcode(imageData) {
-        const pixels = imageData.data;
-        const width = imageData.width;
-        const height = imageData.height;
-        let barcode = '';
-
-        // Simple algorithm to decode Code 39 barcode pattern
-        // For demonstration, we assume the barcode is horizontally aligned
-        for (let y = 0; y < height; y++) {
-            let white = 0;
-            let black = 0;
-            let isBlack = false;
-            let code = '';
-
-            for (let x = 0; x < width; x++) {
-                const idx = (y * width + x) * 4;
-                const r = pixels[idx];
-                const g = pixels[idx + 1];
-                const b = pixels[idx + 2];
-                const brightness = (r + g + b) / 3;
-
-                if (brightness < 128) {
-                    if (!isBlack) {
-                        white++;
-                        if (black > 0) {
-                            if (black < white * 2) {
-                                code += '1';
-                            }
-                            else {
-                                code += '0';
-                            }
-                            black = 0;
-                        }
-                    }
-                    isBlack = true;
-                } else {
-                    if (isBlack) {
-                        black++;
-                        if (white > 0) {
-                            if (white < black * 2) {
-                                code += '0';
-                            }
-                            else {
-                                code += '1';
-                            }
-                            white = 0;
-                        }
-                    }
-                    isBlack = false;
-                }
-            }
-
-            if (code.length > 0) {
-                // Convert binary code to ASCII character
-                const charCode = parseInt(code, 2);
-                if (charCode >= 32 && charCode <= 126) {
-                    barcode += String.fromCharCode(charCode);
-                }
-            }
+    // Initialize QuaggaJS with configuration for Code 39
+    Quagga.init({
+        inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#barcode-scanner'),
+            constraints: {
+                facingMode: "environment"
+            },
+        },
+        decoder: {
+            readers: ["code_39_reader"]
         }
+    }, function(err) {
+        if (err) {
+            console.error("Failed to initialize Quagga:", err);
+            return;
+        }
+        console.log("Quagga initialized successfully");
 
-        return barcode;
-    }
+        // Start barcode scanning
+        Quagga.start();
+    });
 
-    // Capture image from video stream every second
-    setInterval(captureImage, 1000);
+    // Listen for barcode detection events
+    Quagga.onDetected(function(result) {
+        const code = result.codeResult.code;
+        console.log("Barcode detected:", code);
+        // Display the detected barcode on the webpage
+        document.getElementById('output').textContent = "Barcode: " + code;
+    });
 });
 </script>
-
 </body>
 </html>
