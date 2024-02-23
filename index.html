@@ -4,17 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barcode Scanner</title>
+<style>
+    #video {
+        width: 100%;
+        max-width: 640px;
+        height: auto;
+    }
+</style>
 </head>
 <body>
 <h1>Barcode Scanner</h1>
-<video id="video" width="640" height="480" autoplay></video>
+<video id="video" autoplay></video>
+<canvas id="canvas" style="display: none;"></canvas>
 <div id="output"></div>
 
 <script>
-// Function to start the barcode scanner
-function startScanner() {
-    // Get video element
-    var video = document.getElementById('video');
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('video');
+    const output = document.getElementById('output');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
 
     // Access the device camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
@@ -25,35 +34,36 @@ function startScanner() {
             console.error('Error accessing camera:', error);
         });
 
-    // Create a canvas element to capture frames
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
+    // Function to capture image from video stream
+    function captureImage() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Function to capture frames and decode barcodes
-    function captureFrame() {
-        // Draw video frame onto the canvas
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Get image data from the canvas
-        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-        // Decode barcode from the image data (you can use any barcode decoding library here)
-        // For example, using ZXing JavaScript library:
-        // var code = decodeBarcode(imageData);
-        
-        // For demonstration purposes, just display the raw image data
-        document.getElementById('output').textContent = imageData;
-        
-        // Request next frame
-        requestAnimationFrame(captureFrame);
+        // Convert canvas content to base64 image data
+        const imageData = canvas.toDataURL('image/png');
+        decodeBarcode(imageData);
     }
 
-    // Start capturing frames
-    captureFrame();
-}
+    // Function to decode barcode using jsQR library
+    function decodeBarcode(imageData) {
+        const img = new Image();
+        img.onload = function() {
+            const code = jsQR(img, img.width, img.height);
+            if (code) {
+                output.textContent = 'Scanned Barcode: ' + code.data;
+            } else {
+                output.textContent = 'No barcode detected';
+            }
+        };
+        img.src = imageData;
+    }
 
-// Start the barcode scanner when the page loads
-document.addEventListener('DOMContentLoaded', startScanner);
+    // Capture image from video stream every second
+    setInterval(captureImage, 1000);
+});
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 </body>
 </html>
