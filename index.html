@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcode Scanner</title>
+<style>
+    #output {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+</style>
+</head>
+<body>
+<h1>Barcode Scanner</h1>
+<div id="output"></div>
+
+<script>
+    // Function to handle barcode scanner result
+    function onBarcodeScanned(event) {
+        // Get the result from the barcode scanner
+        const code = event.data.code;
+        
+        // Display the result on the webpage
+        document.getElementById('output').textContent = 'Scanned Barcode: ' + code;
+    }
+
+    // Event listener for barcode scanner result
+    document.addEventListener('barcode-scanned', onBarcodeScanned);
+
+    // HTML5 Barcode Scanner API configuration
+    const scanner = new BarcodeScanner({
+        barcodeTypes: ['code-39'],
+        targetFormats: ['data']
+    });
+
+    // Start the barcode scanner
+    scanner.start();
+
+    // Stop the barcode scanner when the page unloads
+    window.addEventListener('unload', function() {
+        scanner.stop();
+    });
+</script>
+
+<!-- Barcode Scanner Library -->
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.23.5"></script>
+</body>
+</html>
