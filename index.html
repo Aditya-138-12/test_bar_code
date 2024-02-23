@@ -34,22 +34,78 @@ document.addEventListener('DOMContentLoaded', function() {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         // Convert canvas content to base64 image data
-        const imageData = canvas.toDataURL('image/png');
-        
-        // Process the image data to extract the barcode (not implemented)
-        const barcodeData = processBarcode(imageData);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Process the image data to extract the barcode
+        const barcodeData = decodeBarcode(imageData);
         
         // Display the extracted barcode data
         output.textContent = barcodeData || 'No barcode detected';
     }
 
-    // Function to process image data and extract barcode
-    function processBarcode(imageData) {
-        // This function should implement the logic to extract the barcode from the image data
-        // For Code 39, you'll need to implement barcode recognition algorithms
-        
-        // Placeholder implementation: return a random string
-        return 'ABC123';
+    // Function to decode barcode from image data
+    function decodeBarcode(imageData) {
+        const pixels = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        let barcode = '';
+
+        // Simple algorithm to decode Code 39 barcode pattern
+        // For demonstration, we assume the barcode is horizontally aligned
+        for (let y = 0; y < height; y++) {
+            let white = 0;
+            let black = 0;
+            let isBlack = false;
+            let code = '';
+
+            for (let x = 0; x < width; x++) {
+                const idx = (y * width + x) * 4;
+                const r = pixels[idx];
+                const g = pixels[idx + 1];
+                const b = pixels[idx + 2];
+                const brightness = (r + g + b) / 3;
+
+                if (brightness < 128) {
+                    if (!isBlack) {
+                        white++;
+                        if (black > 0) {
+                            if (black < white * 2) {
+                                code += '1';
+                            }
+                            else {
+                                code += '0';
+                            }
+                            black = 0;
+                        }
+                    }
+                    isBlack = true;
+                } else {
+                    if (isBlack) {
+                        black++;
+                        if (white > 0) {
+                            if (white < black * 2) {
+                                code += '0';
+                            }
+                            else {
+                                code += '1';
+                            }
+                            white = 0;
+                        }
+                    }
+                    isBlack = false;
+                }
+            }
+
+            if (code.length > 0) {
+                // Convert binary code to ASCII character
+                const charCode = parseInt(code, 2);
+                if (charCode >= 32 && charCode <= 126) {
+                    barcode += String.fromCharCode(charCode);
+                }
+            }
+        }
+
+        return barcode;
     }
 
     // Capture image from video stream every second
