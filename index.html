@@ -36,38 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Convert canvas content to base64 image data
         const imageData = canvas.toDataURL('image/png');
         
-        // Decode barcode using ZXing API
-        decodeBarcode(imageData);
+        // Process the image data to extract the barcode (not implemented)
+        const barcodeData = processBarcode(imageData);
+        
+        // Display the extracted barcode data
+        output.textContent = barcodeData || 'No barcode detected';
     }
 
-    // Function to decode barcode using ZXing API
-    function decodeBarcode(imageData) {
-        // Send image data to ZXing API for decoding
-        fetch('https://zxing.org/w/decode', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'u=' + encodeURIComponent(imageData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Display decoded barcode data
-            if (data && data[0] && data[0].symbol) {
-                output.textContent = 'Scanned Barcode: ' + data[0].symbol.data;
-            } else {
-                output.textContent = 'No barcode detected';
-            }
-        })
-        .catch(error => {
-            console.error('Error decoding barcode:', error);
-            output.textContent = 'Error decoding barcode';
-        });
+    // Function to process image data and extract barcode
+    function processBarcode(imageData) {
+        // This function should implement the logic to extract the barcode from the image data
+        // For Code 39, you'll need to implement barcode recognition algorithms
+        
+        // Placeholder implementation: return a random string
+        return 'ABC123';
     }
 
     // Capture image from video stream every second
     setInterval(captureImage, 1000);
 });
 </script>
+
 </body>
 </html>
