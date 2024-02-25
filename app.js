@@ -36,7 +36,6 @@ function code_scan() {
         Quagga.stop();
 
         // Hide the barcode scanner element
-        document.querySelector('#barcode-scanner').style.display = 'none';
 
         // Stop the video stream
         const videoElement = document.querySelector('#barcode-scanner video');
@@ -44,5 +43,6 @@ function code_scan() {
             const tracks = videoElement.srcObject.getTracks();
             tracks.forEach(track => track.stop());
         }
+        document.querySelector('#barcode-scanner').style.display = 'none';
     });
 }
