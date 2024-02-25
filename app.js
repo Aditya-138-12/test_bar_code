@@ -31,7 +31,7 @@ console.log("s");
         const code = result.codeResult.code;
         console.log("Barcode detected:", code);
         // Display the detected barcode on the webpage
-        document.getElementById("dd").innerHTML = code;
+        document.getElementById("home_link").innerHTML = code;
         console.log(code);
     });
 }
