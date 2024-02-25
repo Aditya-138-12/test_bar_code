@@ -1,7 +1,5 @@
 // JavaScript (app.js)
 function code_scan() {
-console.log("s");
-//document.getElementById("main_body_2").style.background = "blur(20px)";
     // Initialize QuaggaJS with configuration for Code 39
     Quagga.init({
         inputStream: {
@@ -30,9 +28,8 @@ console.log("s");
     Quagga.onDetected(function(result) {
         const code = result.codeResult.code;
         console.log("Barcode detected:", code);
-        // Display the detected barcode on the webpage
-        document.getElementById("home_link").innerHTML = code;
-        console.log(code);
+        
+        // Place the detected barcode into the <a> tag with id 'home_link'
+        document.getElementById('home_link').textContent = "Barcode: " + code;
     });
 }
-
