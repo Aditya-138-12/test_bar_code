@@ -32,19 +32,20 @@ function code_scan() {
         // Place the detected barcode into the <a> tag with id 'home_link'
         document.getElementById('home_link').textContent = "Barcode: " + code;
 
-        // Stop barcode scanning after detecting one barcode
-        Quagga.stop();
-
-        // Hide the barcode scanner element
-
         // Stop the video stream
         const videoElement = document.querySelector('#barcode-scanner video');
         if (videoElement && videoElement.srcObject) {
             const tracks = videoElement.srcObject.getTracks();
             tracks.forEach(track => track.stop());
         }
+
+        // Stop barcode scanning after detecting one barcode
+        Quagga.stop();
+
+        // Remove the barcode scanner element
         const barcodeScanner = document.querySelector('#barcode-scanner');
-        barcodeScanner.style.display = 'none';
-        barcodeScanner.innerHTML = '';
+        if (barcodeScanner) {
+            barcodeScanner.parentNode.removeChild(barcodeScanner);
+        }
     });
 }
