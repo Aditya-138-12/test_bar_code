@@ -43,7 +43,8 @@ function code_scan() {
             const tracks = videoElement.srcObject.getTracks();
             tracks.forEach(track => track.stop());
         }
-        document.querySelector('#barcode-scanner').style.display = 'none';
+        const barcodeScanner = document.querySelector('#barcode-scanner');
+        barcodeScanner.style.display = 'none';
         barcodeScanner.innerHTML = '';
     });
 }
