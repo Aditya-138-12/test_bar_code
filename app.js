@@ -31,5 +31,8 @@ function code_scan() {
         
         // Place the detected barcode into the <a> tag with id 'home_link'
         document.getElementById('home_link').textContent = "Barcode: " + code;
+
+        // Stop barcode scanning after detecting one barcode
+        Quagga.stop();
     });
 }
