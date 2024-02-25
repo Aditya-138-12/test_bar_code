@@ -44,5 +44,6 @@ function code_scan() {
             tracks.forEach(track => track.stop());
         }
         document.querySelector('#barcode-scanner').style.display = 'none';
+        barcodeScanner.innerHTML = '';
     });
 }
