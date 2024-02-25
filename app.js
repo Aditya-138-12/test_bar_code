@@ -42,5 +42,8 @@ function code_scan() {
         
         // Clear the source object of the video element to close the stream
         document.querySelector('#barcode-scanner').srcObject = null;
+
+        // Hide the barcode scanner element
+        document.querySelector('#barcode-scanner').style.display = 'none';
     });
 }
