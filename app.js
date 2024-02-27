@@ -30,7 +30,7 @@ function code_scan() {
         console.log("Barcode detected:", code);
         
         // Place the detected barcode into the <a> tag with id 'home_link'
-        
+        document.getElementById('home_link').textContent = "Barcode Type: " + typeof(code) + code;
         
         /*const url = "https://adityasaroha456.pythonanywhere.com/post_data";
         const data = [code];
@@ -65,6 +65,6 @@ function code_scan() {
 
         // Hide the barcode scanner element
         document.querySelector('#barcode-scanner').style.display = 'none';
-        document.getElementById('home_link').textContent = "Barcode Type: " + typeof(code);
+        
     });
 }
