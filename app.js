@@ -30,22 +30,40 @@ function code_scan() {
         console.log("Barcode detected:", code);
         
         // Place the detected barcode into the <a> tag with id 'home_link'
-        document.getElementById('home_link').textContent = "Barcode: " + code;
-
-        // Stop the video stream
-        const videoElement = document.querySelector('#barcode-scanner video');
-        if (videoElement && videoElement.srcObject) {
-            const tracks = videoElement.srcObject.getTracks();
-            tracks.forEach(track => track.stop());
-        }
+        
+        
+        const url = "https://adityasaroha456.pythonanywhere.com/post_data";
+        const data = [code];
+        
+        fetch(url, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)})
+        	.then(response=> {
+        	
+        	if(!response.ok){
+        		throw new Error("Network Error", response.status);
+        	}
+        	return response.text();
+        	}).then(data => {
+        	
+        	document.getElementById('home_link').textContent = "Barcode AUTH: " + data;
+        	
+        	}).catch(error => {
+        	
+        	console.error("Error", error);
+        	
+        	});
 
         // Stop barcode scanning after detecting one barcode
         Quagga.stop();
 
-        // Remove the barcode scanner element
-        const barcodeScanner = document.querySelector('#barcode-scanner');
-        if (barcodeScanner) {
-            barcodeScanner.parentNode.removeChild(barcodeScanner);
-        }
+        // Get the video tracks from the stream and stop them
+        const stream = document.querySelector('#barcode-scanner').srcObject;
+        const tracks = stream.getVideoTracks();
+        tracks.forEach(track => track.stop());
+        
+        // Clear the source object of the video element to close the stream
+        document.querySelector('#barcode-scanner').srcObject = null;
+
+        // Hide the barcode scanner element
+        document.querySelector('#barcode-scanner').style.display = 'none';
     });
 }
