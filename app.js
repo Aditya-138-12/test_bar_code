@@ -32,7 +32,7 @@ function code_scan() {
         // Place the detected barcode into the <a> tag with id 'home_link'
         
         
-        const url = "https://adityasaroha456.pythonanywhere.com/post_data";
+        /*const url = "https://adityasaroha456.pythonanywhere.com/post_data";
         const data = [code];
         
         fetch(url, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)})
@@ -50,7 +50,7 @@ function code_scan() {
         	
         	console.error("Error", error);
         	
-        	});
+        	});*/
 
         // Stop barcode scanning after detecting one barcode
         Quagga.stop();
@@ -65,5 +65,6 @@ function code_scan() {
 
         // Hide the barcode scanner element
         document.querySelector('#barcode-scanner').style.display = 'none';
+        document.getElementById('home_link').textContent = "Barcode Type: " + typeof(code);
     });
 }
