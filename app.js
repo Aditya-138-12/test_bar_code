@@ -32,10 +32,8 @@ function code_scan() {
         // Place the detected barcode into the <a> tag with id 'home_link'
         
         
-        const url = "https://adityasaroha456.pythonanywhere.com/post_data";
-        const data = [code];
         
-        fetch(url, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)})
+        /*fetch(url, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)})
         	.then(response=> {
         	
         	if(!response.ok){
@@ -50,7 +48,31 @@ function code_scan() {
         	
         	console.error("Error", error);
         	
+        	});*/
+        const url = "https://adityasaroha456.pythonanywhere.com/post_data";
+        const data = [code];
+        
+        fetch(url, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)})
+        	.then(response=> {
+        	
+        	if(!response.ok){
+        		throw new Error("Network Error", response.status);
+        	}
+        	return response.text();
+        	}).then(data => {
+      
+        	const cdat = data.replace(/"/g, '');
+        	
+        	console.log(cdat);
+
+            document.getElementById('home_link').textContent = "Barcode AUTH: " + cdat;
+                
+        	}).catch(error => {
+        	
+        	console.error("Error", error);
+        	
         	});
+
 
         // Stop barcode scanning after detecting one barcode
         Quagga.stop();
