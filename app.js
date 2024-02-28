@@ -44,7 +44,7 @@ function code_scan() {
         	return response.text();
         	}).then(data => {
         	const cdat = data.replace(/"/g, '');
-        	document.getElementById('home_link').textContent = "Barcode AUTH: " + cdat;
+        	
         	
         	}).catch(error => {
         	
@@ -65,6 +65,6 @@ function code_scan() {
 
         // Hide the barcode scanner element
         document.querySelector('#barcode-scanner').style.display = 'none';
-        
+        document.getElementById('home_link').textContent = "Barcode AUTH: " + cdat;
     });
 }
